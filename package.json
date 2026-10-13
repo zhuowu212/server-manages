@@ -1,0 +1,6 @@
+{
+  "name": "server-manages-static", "version": "0.1.0", "private": true,
+  "scripts": {"test:e2e": "playwright test"},
+  "dependencies": {"bootstrap": "5.3.8", "htmx.org": "2.0.8"},
+  "devDependencies": {"@playwright/test": "1.56.0", "typescript": "5.9.3"}
+}

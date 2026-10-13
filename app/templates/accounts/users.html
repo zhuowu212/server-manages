@@ -1,0 +1,76 @@
+{% extends 'base.html' %}{% block title %}账号{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">账号</h1>
+</div>
+
+<section class="mb-4">
+  <h2 class="h6">新增账号</h2>
+  <form method="post" class="row g-3" aria-label="新增账号表单">
+    {% csrf_token %}
+    <div class="col-12 col-md-3">
+      <label class="form-label" for="username">用户名</label>
+      <input class="form-control" id="username" name="username" required maxlength="128" autocomplete="off">
+    </div>
+    <div class="col-12 col-md-3">
+      <label class="form-label" for="display_name">显示名</label>
+      <input class="form-control" id="display_name" name="display_name" required maxlength="128" autocomplete="off">
+    </div>
+    <div class="col-12 col-md-3">
+      <label class="form-label" for="role">角色</label>
+      <select class="form-select" id="role" name="role" required>
+        <option value="" selected disabled>选择角色</option>
+        {% for value,label in roles %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-md-3">
+      <label class="form-label" for="initial_password">初始密码</label>
+      <input class="form-control" id="initial_password" name="initial_password" type="password" required minlength="12" maxlength="256" autocomplete="new-password">
+    </div>
+    <div class="col-12 d-flex align-items-center gap-3">
+      <div class="form-check">
+        <input class="form-check-input" id="active" name="active" type="checkbox" checked>
+        <label class="form-check-label" for="active">启用</label>
+      </div>
+      <button class="btn btn-primary" type="submit">创建</button>
+    </div>
+  </form>
+</section>
+
+<section>
+  <h2 class="h6">账号列表</h2>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th scope="col">用户名</th>
+          <th scope="col">显示名</th>
+          <th scope="col">角色</th>
+          <th scope="col">状态</th>
+          <th scope="col">版本</th>
+          <th scope="col">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td><input class="form-control form-control-sm" value="{{ user.username }}" readonly aria-label="用户名"></td>
+          <td>{{ user.display_name }}</td>
+          <td>{{ user.get_role_display }}</td>
+          <td>{% if user.active %}启用{% else %}停用{% endif %}{% if user.must_change_password %}，需改密{% endif %}</td>
+          <td>{{ user.version }}</td>
+          <td class="text-nowrap">
+            {% if user.active %}
+            <button class="btn btn-outline-danger btn-sm" type="button" data-confirm-action="停用账号" data-confirm-target="{{ user.username }}">停用</button>
+            {% endif %}
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-confirm-action="重置密码" data-confirm-target="{{ user.username }}">重置</button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">暂无账号</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

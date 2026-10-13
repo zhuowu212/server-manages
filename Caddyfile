@@ -1,0 +1,22 @@
+{
+    admin off
+    auto_https disable_redirects
+    log default {
+        output stdout
+        format filter {
+            wrap json
+            fields {
+                request delete
+                error delete
+                msg delete
+            }
+        }
+    }
+}
+http://{$DOMAIN}:8080 {
+    redir https://{$DOMAIN}{uri} permanent
+}
+https://{$DOMAIN}:8443 {
+    header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    reverse_proxy app:8000
+}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block title %}资产详情{% endblock %}
+{% block content %}
+{% if missing %}
+<h1 class="h4">资产不存在</h1>
+{% else %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">{{ asset.asset_no }}</h1>
+  {% if can_delete %}<button class="btn btn-outline-danger btn-sm" type="button" data-confirm-action="删除资产" data-confirm-target="{{ asset.asset_no }}">删除</button>{% endif %}
+</div>
+<dl class="row">
+  <dt class="col-sm-3">名称</dt><dd class="col-sm-9">{{ asset.name }}</dd>
+  <dt class="col-sm-3">类型</dt><dd class="col-sm-9">{{ asset.type }}</dd>
+  <dt class="col-sm-3">状态</dt><dd class="col-sm-9">{{ asset.status }}</dd>
+  <dt class="col-sm-3">环境</dt><dd class="col-sm-9">{{ asset.environment }}</dd>
+  <dt class="col-sm-3">负责人</dt><dd class="col-sm-9">{{ asset.owner }}</dd>
+  <dt class="col-sm-3">主机名</dt><dd class="col-sm-9">{{ asset.hostname|default:"" }}</dd>
+  <dt class="col-sm-3">宿主机编号</dt><dd class="col-sm-9">{{ asset.host_asset_no|default:"" }}</dd>
+  <dt class="col-sm-3">内网IP</dt><dd class="col-sm-9">{{ asset.internal_ips|join:"; " }}</dd>
+  <dt class="col-sm-3">外网IP</dt><dd class="col-sm-9">{{ asset.external_ips|join:"; " }}</dd>
+  <dt class="col-sm-3">版本</dt><dd class="col-sm-9">{{ asset.version }}</dd>
+</dl>
+<a class="btn btn-outline-secondary" href="/assets">返回</a>
+{% endif %}
+{% endblock %}

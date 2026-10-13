@@ -1,0 +1,101 @@
+{% extends 'base.html' %}{% block title %}新增资产{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">新增资产</h1>
+<form method="post" class="row g-3" aria-label="新增资产表单" data-asset-form>
+  {% csrf_token %}
+  <div class="col-12 col-md-3">
+    <label class="form-label" for="asset_no">资产编号</label>
+    <input class="form-control" id="asset_no" name="asset_no" required maxlength="255">
+  </div>
+  <div class="col-12 col-md-3">
+    <label class="form-label" for="name">名称</label>
+    <input class="form-control" id="name" name="name" required maxlength="255">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label" for="type">类型</label>
+    <select class="form-select" id="type" name="type" required data-asset-type>
+      <option value="" selected disabled>选择类型</option>
+      {% for value,label in types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label" for="status">状态</label>
+    <select class="form-select" id="status" name="status" required>
+      <option value="" selected disabled>选择状态</option>
+      {% for value,label in statuses %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-12 col-md-4">
+    <label class="form-label" for="purpose">用途</label>
+    <input class="form-control" id="purpose" name="purpose" required maxlength="4096">
+  </div>
+  <div class="col-6 col-md-2">
+    <label class="form-label" for="environment">环境</label>
+    <input class="form-control" id="environment" name="environment" required maxlength="128">
+  </div>
+  <div class="col-6 col-md-2">
+    <label class="form-label" for="owner">负责人</label>
+    <input class="form-control" id="owner" name="owner" required maxlength="128">
+  </div>
+  <div class="col-6 col-md-2">
+    <label class="form-label" for="room">机房</label>
+    <input class="form-control" id="room" name="room" required maxlength="128">
+  </div>
+  <div class="col-6 col-md-2">
+    <label class="form-label" for="region">区域</label>
+    <input class="form-control" id="region" name="region" required maxlength="128">
+  </div>
+  <div class="col-12 col-md-3">
+    <label class="form-label" for="serial">序列号</label>
+    <input class="form-control" id="serial" name="serial" maxlength="255" data-field-serial>
+  </div>
+  <div class="col-12 col-md-3">
+    <label class="form-label" for="hostname">主机名</label>
+    <input class="form-control" id="hostname" name="hostname" maxlength="253" data-field-hostname>
+  </div>
+  <div class="col-12 col-md-3">
+    <label class="form-label" for="host_asset_no">宿主机编号</label>
+    <input class="form-control" id="host_asset_no" name="host_asset_no" maxlength="255" data-field-host>
+  </div>
+  <div class="col-12 col-md-3">
+    <label class="form-label" for="supplier">供应商</label>
+    <input class="form-control" id="supplier" name="supplier" maxlength="255">
+  </div>
+  <div class="col-12 col-md-6">
+    <label class="form-label" for="internal_ips">内网IP</label>
+    <input class="form-control" id="internal_ips" name="internal_ips">
+  </div>
+  <div class="col-12 col-md-6">
+    <label class="form-label" for="external_ips">外网IP</label>
+    <input class="form-control" id="external_ips" name="external_ips">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label" for="purchase_date">采购日期</label>
+    <input class="form-control" id="purchase_date" name="purchase_date" type="date">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label" for="rack_date">上架日期</label>
+    <input class="form-control" id="rack_date" name="rack_date" type="date">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label" for="warranty_end">维保到期</label>
+    <input class="form-control" id="warranty_end" name="warranty_end" type="date">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label" for="expires_on">使用到期</label>
+    <input class="form-control" id="expires_on" name="expires_on" type="date">
+  </div>
+  <div class="col-12">
+    <label class="form-label" for="hardware_text">硬件描述</label>
+    <textarea class="form-control" id="hardware_text" name="hardware_text" maxlength="16384" rows="3"></textarea>
+  </div>
+  <div class="col-12">
+    <label class="form-label" for="credential_ref">凭据引用</label>
+    <input class="form-control" id="credential_ref" name="credential_ref" maxlength="2048">
+  </div>
+  <div class="col-12 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">保存</button>
+    <a class="btn btn-outline-secondary" href="/assets">返回</a>
+  </div>
+</form>
+{% endblock %}

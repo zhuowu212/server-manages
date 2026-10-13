@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block title %}登录{% endblock %}
+{% block content %}
+<section class="row">
+  <div class="col-12 col-md-5 col-lg-4">
+    <h1 class="h4 mb-3">登录</h1>
+    <form method="post" aria-label="登录表单" class="vstack gap-3">
+      {% csrf_token %}
+      <div>
+        <label class="form-label" for="username">用户名</label>
+        <input class="form-control" id="username" name="username" required autocomplete="username" maxlength="128">
+      </div>
+      <div>
+        <label class="form-label" for="password">密码</label>
+        <input class="form-control" id="password" name="password" type="password" required autocomplete="current-password" minlength="12" maxlength="256">
+      </div>
+      <button class="btn btn-primary" type="submit">登录</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

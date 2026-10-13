@@ -1,0 +1,82 @@
+name: server-manages
+x-app: &app
+  image: ${IMAGE:-server-manages:0.1.0}
+  build:
+    context: .
+    args: {IMAGE_REGISTRY: "${BUILD_REGISTRY:-docker.io}"}
+    network: host
+  user: "10001:10001"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=256m,mode=1777"]
+  pids_limit: 128
+  mem_limit: 1g
+  restart: unless-stopped
+  environment:
+    DATA_ROOT: /data
+    BACKUP_ROOT: /backups
+    DOMAIN: ${DOMAIN:-assets.example.com}
+    ADMIN_USERNAME: ${ADMIN_USERNAME:-operator}
+    DJANGO_SECRET_KEY_FILE: /run/secrets/django_key
+  secrets: [django_key]
+  volumes:
+    - ${DATA_DIR:-./data}:/data
+    - ${BACKUP_DIR:-./backups}:/backups
+  logging: &logs
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+services:
+  app:
+    <<: *app
+    command: [gunicorn, config.wsgi:application, --bind, "0.0.0.0:8000", --workers, "1", --threads, "4", --access-logfile, /dev/null, --error-logfile, /dev/null]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+  worker:
+    <<: *app
+    command: [python, manage.py, run_worker]
+  proxy:
+    image: caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=32m,mode=1777"]
+    pids_limit: 64
+    mem_limit: 128m
+    restart: unless-stopped
+    ports: ["80:8080", "443:8443"]
+    environment: {DOMAIN: "${DOMAIN:-assets.example.com}"}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging: *logs
+    depends_on: [app]
+  init:
+    <<: *app
+    profiles: [init]
+    restart: "no"
+    secrets: [django_key, admin_password]
+    command: [python, manage.py, bootstrap_admin, --password-file, /run/secrets/admin_password]
+  e2e:
+    <<: *app
+    profiles: [test]
+    restart: "no"
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings_test
+      PLAYWRIGHT_BROWSERS_PATH: /tmp/browsers
+    volumes: []
+    secrets: []
+    command: [sh, -c, "playwright install chromium && pytest tests/e2e"]
+secrets:
+  django_key:
+    file: ${DJANGO_SECRET_FILE:-./secrets/django_key}
+  admin_password:
+    file: ${ADMIN_PASSWORD_FILE:-./secrets/admin_password}
+volumes:
+  caddy_data:
+  caddy_config:
